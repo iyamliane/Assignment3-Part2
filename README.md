@@ -58,11 +58,29 @@ Now we will clone the provided *updated* starter code from a repository. This wi
 
 ```sudo touch /var/lib/webgen/documents/file-one /var/lib/webgen/documents/file-two```
 
+Your file structure should look like this: 
+```
+/var/bin/webgen/
+ .
+ ├── bin/
+ │   └── generate_index
+ ├── documents/
+ │   ├── file-one
+ │   └── file-two
+ └── HTML/
+ ```
+
 7) Change ownership for the system user: 
 
 ```sudo chown -R webgen:webgen /var/lib/webgen```
 
+8) Repeat above steps for your other server
+
 ## Task 4: Nginx Server Configuration ##
 
-***NOTE***: For this task, we will be configurating the servers on both droplets. Ensure that you repeat each of the steps below for the other existing server.
+Server blocks configure web servers to handle requests for specific domains or paths, defining document roots and settings for each site.
+
+>[!NOTE] 
+>For this task, we will be configurating the servers on both droplets. Ensure that you repeat each of the steps below for the other existing server.
+
 
