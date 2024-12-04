@@ -5,8 +5,17 @@ For this assignment we will be expanding our knowledge on Nginx by configuring t
 
 Load balancers distribute traffic across multiple servers to improve performance and reliability, while Nginx is a very useful tool that can serve web content, act as a reverse proxy, and balance loads efficiently.
 
+## Table of Contents ##
 
-## Table of Contents ## 
+1. [Introduction](#introduction)
+2. [Task 1: Create Two New Droplets](#task-1-create-two-new-droplets)
+3. [Task 2: Create Load Balancer](#task-2-create-load-balancer)
+4. [Task 3: Clone Starter Code Repository](#task-3-clone-starter-code-repository)
+5. [Task 4: Nginx Server Configuration](#task-4-nginx-server-configuration)
+6. [Task 5: Server Verification](#task-5-server-verification)
+7. [End of Assignment](#end-of-assignment)
+8. [References](#references)
+
 
 ## Task 1: Create Two New Droplets ##
 We will be creating two new droplets for our Arch Linux servers using DigitalOcean along with the tag ```web```. These tags will be utilized when creating your load balancer.
@@ -83,4 +92,95 @@ Server blocks configure web servers to handle requests for specific domains or p
 >[!NOTE] 
 >For this task, we will be configurating the servers on both droplets. Ensure that you repeat each of the steps below for the other existing server.
 
+1) Update server block: 
+
+```sudo nvim /etc/nginx/sites-available/webgen.conf```
+
+2) Add the following code: 
+
+```
+      listen 80;
+      listen [::]:80;
+
+      server_name localhost.webgen;
+
+      location / {
+           root /var/lib/webgen/HTML;
+           index index.html;
+           try_files $uri $uri/ =404;
+      }
+
+      # Handle /documents/ requests
+      location /documents {
+           alias /var/lib/webgen/documents/;
+           autoindex on;
+           autoindex_exact_size off;
+           autoindex_localtime on;
+           try_files $uri $uri/ =404;
+      }
+```
+**Code explained**: 
+- ```location:``` This block specifies the /documents URL path
+- ```alias :``` Replaces URL path with directory path
+- ```autoindex on; :``` if there is no index.html file, it will enable directory listing
+- ```autoindex_exact_size off :``` This will display files in human readable format
+- ```autoindex_localtime_on :``` Displays the file timestamp in the user's local timezone 
+
+3) Test the configuration for any errors:
+
+```sudo nginx -t``` 
+
+4) Run the following commands to start/enable Nginx: 
+```
+sudo systemctl enable nginx
+sudo systemctl start nginx
+sudo systemctl status nginx
+```
+## Task 5: Server Verification ##
+
+After the configuration has been completed on both servers, we will be verifying that they are running properly and that the load balancer is distributing the traffic.
+
+1) Copy the load balancer IP address 
+2) Access the server by entering load balancer IP address into the web: 
+
+```http://load-balancer-ipaddr```
+
+It should look like this:
+
+![image](./images/system-information.png)
+
+3) Go to documents directory to ensure files are served:
+
+```http://load-balancer-ipaddr/documents```
+
+It should look like this: 
+
+![image](./images/document.png)
+
+## End of Assignment ##
+
+Congrats on the completion of setting up two servers along with the load balancer! 
+
+## References ##
+
+1. **DigitalOcean Documentation**  
+   [Creating Droplets](https://docs.digitalocean.com/products/droplets/how-to/create/) - Step-by-step guide for creating and managing Droplets on DigitalOcean.  
+
+2. **Nginx Documentation**  
+   [NGINX Configuration](https://nginx.org/en/docs/beginners_guide.html) - Official guide for configuring Nginx server blocks and load balancing.  
+
+3. **Arch Linux Wiki**  
+   [Arch Linux Installation Guide](https://wiki.archlinux.org/title/Installation_guide) - Detailed instructions on installing and configuring Arch Linux.  
+   [Nginx on Arch](https://wiki.archlinux.org/title/Nginx) - Instructions for setting up Nginx on Arch Linux.
+
+4. **Git Documentation**  
+   [Cloning a Repository](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository) - Guide on how to clone repositories using Git.
+
+5. **Systemd Documentation**  
+   [Systemd User Services](https://www.freedesktop.org/wiki/Software/systemd/) - Documentation on managing services with `systemctl`.
+
+6. **Linux Man Pages**  
+   - [chmod](https://man7.org/linux/man-pages/man1/chmod.1.html)  
+   - [chown](https://man7.org/linux/man-pages/man1/chown.1.html)  
+   - [nginx](https://man7.org/linux/man-pages/man8/nginx.8.html)  
 
